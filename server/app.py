@@ -7,6 +7,14 @@ from functools import wraps
 import jwt
 import datetime
 
+# Function to calculate cost based on pickup location, destination, and weight
+def calculate_cost(pickup_location, destination, weight):
+    # Placeholder logic for cost calculation
+    base_cost = 5.0
+    distance_cost = 0.5 * (len(pickup_location) + len(destination))
+    weight_cost = 2.0 * weight
+    return base_cost + distance_cost + weight_cost
+
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
@@ -66,13 +74,19 @@ def get_parcels(current_user):
 @token_required
 def create_parcel(current_user):
     data = request.get_json()
+    cost = calculate_cost(data['pickup_location'], data['destination'], data['weight'])
+    if cost is None:
+        abort(400, description="Failed to calculate cost. Check pickup and destination locations.")
+
     parcel = Parcel(
         tracking_id=data['tracking_id'],
         pickup_location=data['pickup_location'],
         destination=data['destination'],
         weight=data['weight'],
         description=data.get('description', ''),
-        user_id=current_user.id
+        user_id=current_user.id,
+        cost=cost,
+        delivery_speed=data.get('delivery_speed')  
     )
     db.session.add(parcel)
     db.session.commit()
