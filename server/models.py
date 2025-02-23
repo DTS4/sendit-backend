@@ -8,8 +8,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
-    role = db.Column(db.String(20), nullable=False, default='user')  # 'user' or 'admin'
+    password_hash = db.Column(db.String(256), nullable=False)  
+    role = db.Column(db.String(20), nullable=False, default='user')  
     parcels = db.relationship('Parcel', backref='user', lazy=True)
 
     def set_password(self, password):
@@ -24,11 +24,13 @@ class Parcel(db.Model):
     tracking_id = db.Column(db.String(50), unique=True, nullable=False)
     pickup_location = db.Column(db.String(200), nullable=False)
     destination = db.Column(db.String(200), nullable=False)
-    status = db.Column(db.String(50), nullable=False, default='Pending')  # Pending, In Transit, Delivered, Cancelled
+    status = db.Column(db.String(50), nullable=False, default='Pending')  
     current_location = db.Column(db.String(200), nullable=True)
     weight = db.Column(db.Float, nullable=False)
     description = db.Column(db.Text, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    cost = db.Column(db.Float, nullable=True)  
+    delivery_speed = db.Column(db.String(50), nullable=True)  
 
     def to_dict(self):
         return {
@@ -40,5 +42,7 @@ class Parcel(db.Model):
             'current_location': self.current_location,
             'weight': self.weight,
             'description': self.description,
-            'user_id': self.user_id
+            'user_id': self.user_id,
+            'cost': self.cost,
+            'delivery_speed': self.delivery_speed  
         }
