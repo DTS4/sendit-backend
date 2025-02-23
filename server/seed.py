@@ -23,9 +23,22 @@ def seed_data():
             destination='Los Angeles',
             weight=5.0,
             description='Fragile items',
-            user_id=user1.id
+            user_id=user1.id,
+            cost=150.0,
+            delivery_speed='Standard'  # Added delivery speed
+        )
+        parcel2 = Parcel(
+            tracking_id='TRK456',
+            pickup_location='San Francisco',
+            destination='Chicago',
+            weight=10.0,
+            description='Electronics',
+            user_id=user1.id,
+            cost=300.0,
+            delivery_speed='Express'  # Added delivery speed
         )
         db.session.add(parcel1)
+        db.session.add(parcel2)
         db.session.commit()
 
 if __name__ == '__main__':
